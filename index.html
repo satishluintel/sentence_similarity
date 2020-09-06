@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTDHTML4.01Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+    <HEAD>
+        <TITLE>Write from Dictation </TITLE>
+        <SCRIPT src="diff_match_patch.js"></SCRIPT>
+    </HEAD>
+    <style>
+        body {
+            margin-left: 20%;
+            margin-right: 20%;
+            font-family: Roboto;
+        }
+    </style>
+
+    <body>
+        <SCRIPT>
+            var dmp = new diff_match_patch();
+            var yellowtext;
+            var greentext;
+            var yellowspans = [];
+            var greenspans = [];
+            var counter = 0;
+            var counter2 = 0;
+            var cc = 0;
+            var cc2 = 0;
+            var total_yellows = 0;
+            var total_greens = 0;
+
+            function launch() {
+                var text1 = document.getElementById('text1').value;
+                var text2 = document.getElementById('text2').value;
+                dmp.Diff_Timeout = parseFloat(5);
+                dmp.Diff_EditCost = parseFloat(3);
+                var d = dmp.diff_main(text1, text2);
+                dmp.diff_cleanupSemantic(d);
+                var ds = dmp.diff_prettyHtml(d);
+                document.getElementById('outputdiv').innerHTML = ds;
+                final();
+                final1();
+            }
+
+            var minuscount1 = 0;
+
+            function final() {
+
+                yellowtext = document.getElementById("outputdiv").querySelectorAll("#missedyellow");
+                for (i = 0; i < yellowtext.length; i ++) {
+                    yellowspans[i] = yellowtext[i];
+                    counter += yellowspans[i].innerHTML.split(' ').length;
+                    for (z = 0; z < yellowspans[i].innerHTML.split(' ').length; z ++) {
+                        if (yellowspans[i].innerHTML.split(' ')[z] == "") {
+                            minuscount1 += 1;
+                        }
+
+                    }
+
+                }
+                cc = counter - minuscount1;
+            }
+
+            var minuscount2 = 0;
+
+            function final1() {
+
+                greentext = document.getElementById("outputdiv").querySelectorAll("#foundgreen");
+                for (i = 0; i < greentext.length; i ++) {
+                    greenspans[i] = greentext[i];
+                    counter2 += greenspans[i].innerHTML.split(' ').length;
+                    for (t = 0; t < greenspans[i].innerHTML.split(' ').length; t ++) {
+                        if (greenspans[i].innerHTML.split(' ')[t] == "") {
+                            minuscount2 += 1;
+                        }
+                    }
+                }
+                cc2 = counter2 - minuscount2;
+                total_greens = cc2;
+                total_yellows = cc;
+                var total_words = total_greens + total_yellows;
+                var percentage_right = total_greens / total_words * 100;
+                console.log(total_words, total_greens, total_yellows);
+                var pq = document.getElementById('percentage').innerHTML = "<p style='font-family:Roboto;'>Percentage Right: " + Math.round(percentage_right) + "% </p>" ;
+            }
+        </SCRIPT>
+
+        <FORM action="#" onsubmit="return false">
+            <TABLE width="100%">
+                <TR>
+                    <TD width="50%">
+
+                        <H3>Your Response Here
+                        </H3>
+                        <TEXTAREA id="text1" style="width: 100%" rows="10">
+                            Type here your response.</TEXTAREA>
+                    </TD>
+                    <TD width="50%">
+                        <H3>Original Text Here</H3>
+                        <TEXTAREA id="text2" style="width: 100%" rows="10">Please type your response here.</TEXTAREA>
+                    </TD>
+                </TR>
+            </TABLE>
+
+            <div style="text-align: center; line-height: 8vh;">
+                <P><INPUT type="button" onclick="launch()" value="Check Answer"></P>
+                <DIV id="outputdiv"></DIV>
+                <DIV id="percentage"></DIV>
+            </div>
+        </FORM>
+
+
+    </BODY>
+</HTML>
+
